@@ -1,4 +1,4 @@
-import { isDate, isObject } from './utils'
+import { isDate, isPlainObject } from './utils'
 
 function encode(val: string): string {
   return encodeURIComponent(val)
@@ -11,18 +11,17 @@ function encode(val: string): string {
     .replace(/%5D/gi, ']')
 }
 
-export function buildUrl(url: string, params?: any): string {
-  if (!params) return url
+export function buildUrl(url: string, data?: any): string {
+  if (!data) return url
   const parts: string[] = []
-  Object.keys(params).map(key => {
+  Object.keys(data).map(key => {
     // 为空值
-    const val = params[key]
+    const val = data[key]
     if (val === null || val === undefined) return
 
     //为数组
     let values = []
     if (Array.isArray(val)) {
-      key += '[]'
       values = val
     } else {
       values = [val]
@@ -31,7 +30,7 @@ export function buildUrl(url: string, params?: any): string {
     values.forEach(val => {
       if (isDate(val)) {
         val = val.toISOString()
-      } else if (isObject(val)) {
+      } else if (isPlainObject(val)) {
         val = JSON.stringify(val)
       }
       parts.push(`${encode(key)}=${encode(val)}`)
